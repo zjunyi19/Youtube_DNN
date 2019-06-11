@@ -12,20 +12,24 @@ import random
 
 file = sys.argv[1]
 data = []
+final_data = []
 cnt = 0
-with open(file, 'r') as f:
+with open(file, 'r', encoding='UTF8') as f:
     for each_line in f:
         if (random.randint(1,11) == 1):
             data.append(json.loads(each_line))
             cnt = cnt + 1
-print(data[0]['name'])
-with open('filter.json', 'w') as f:
-    for i in data:
+
+for datum in data:
+    if datum["is_open"] == 1: # Filter out all the closed restaurants
+        restaurant = {} # For each restaurant, store info of business_id, latitude/longitude, stars, review_count
+        restaurant['business_id'] = datum['business_id']
+        restaurant['latitude'] = datum['latitude']
+        restaurant['longitude'] = datum['longitude']
+        restaurant['stars'] = datum['stars']
+        restaurant['review_count'] = datum['review_count']
+        final_data.append(restaurant) # Store each restaurant info into "final_data"
+
+with open('filter.json', 'w') as f: # Store all the restaurants info into 'filter.json' file
+    for i in final_data:
         f.write(json.dumps(i) + '\n')
-
-
-
-
-
-
-
