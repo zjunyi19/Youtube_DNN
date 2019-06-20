@@ -4,7 +4,6 @@
 # review.json -> user, business, (star), 6685900
 # business -> attributes, 192609
 
-# userid,
 import json
 import linecache
 import sys
@@ -21,8 +20,10 @@ with open(file, 'r', encoding='UTF8') as f:
             cnt = cnt + 1
 
 for datum in data:
-    if datum["is_open"] == 1: # Filter out all the closed restaurants
-        restaurant = {} # For each restaurant, store info of business_id, latitude/longitude, stars, review_count
+    # Filter out all the closed restaurants
+    if datum["is_open"] == 1:
+        # For each restaurant, store info of business_id, latitude/longitude, stars, review_count
+        restaurant = dict()
         restaurant['business_id'] = datum['business_id']
         restaurant['latitude'] = datum['latitude']
         restaurant['longitude'] = datum['longitude']
