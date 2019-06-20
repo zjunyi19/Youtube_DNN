@@ -1,6 +1,19 @@
 import json
 import linecache
 
+"""
+    Process data:
+    1. Delete some of the columns, map every category to a number (can be further used to construct category vector)
+    
+    Attributes:
+    1. business_id, string, 22 character unique string business id.
+    2. latitude, float, latitude.
+    3. longitude, float, latitude.
+    4. stars, float, star rating, rounded to half-stars.
+    5. review_count, integer, number of reviews.
+    6. categories, a dictionary maps category to specific number. 
+"""
+
 s = {}
 cnt = 0
 wf = open("vectorized-business.json", "w+")

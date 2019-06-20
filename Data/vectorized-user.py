@@ -1,6 +1,22 @@
 import json
 import linecache
 
+"""
+    Process data:
+    1. Delete some of the columns.
+    
+    Attributes:
+    1. user_id, string, 22 character unique user id, maps to the user in 'user.json'.
+    2. review_count, integer, the number of reviews they've written.
+    3. userful, integer, number of useful votes sent by the user.
+    4. funny, integer, number of funny votes sent by the user.
+    5. cool, integer, number of cool votes sent by the user.
+    6. friends, array of strings, an array of the user's friend as user_ids.
+    7. fans, integer, number of fans the user has.
+    8. average_stars, float, average rating of all reviews.
+    9. reviews, a JSON array, all reviews a user sent.
+"""
+
 wf = open("data.json", "w+")
 with open("user-review-join.json") as rf:
     for each_line in rf:

@@ -3,6 +3,11 @@ import linecache
 import sys
 import random
 
+"""
+    Process data:
+    1. Join 'user-cleaned.json' and 'review.json', then write them to 'user-review-join.json'.
+"""
+
 join = {}
 
 with open('user-cleaned.json', 'r') as f:
