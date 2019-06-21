@@ -42,11 +42,20 @@ import os
 
 
 def load_grouped_data():
+    """
+    Load 1% data from original dataset
+    :return: user and business dictionary
+    """
     dl = DataLoader()
+    dl.load_user()
+    dl.load_business()
+    print(" # ", dl.user_count, " user data loaded.")
+    print(" # ", dl.business_count, " business data loaded.")
 
-    return dl;
+    return dl.user_data, dl.business_count
 
-class DataLoader():
+
+class DataLoader:
     def __init__(self):
         self.user_count = 0
         self.user_data = {}
@@ -54,7 +63,7 @@ class DataLoader():
         self.business_count = 0
         self.business_data = {}
 
-    def user_random(self):
+    def __user_random__(self):
         data = []
 
         with open('user.json', 'r') as rf:
@@ -66,7 +75,7 @@ class DataLoader():
             for i in data:
                 wf.write(json.dumps(i) + '\n')
 
-    def user_review_join(self):
+    def __user_review_join__(self):
         join = {}
 
         with open('user-random.json', 'r') as rf:
@@ -85,7 +94,7 @@ class DataLoader():
             for i in join.values():
                 wf.write(json.dumps(i) + '\n')
 
-    def vectorized_user(self):
+    def __vectorized_user__(self):
         wf = open("load-user.json", "w+")
         with open("user-review-join.json") as rf:
             for each_line in rf:
@@ -116,25 +125,7 @@ class DataLoader():
         print(list(json.loads(linecache.getline("load-user.json", 1)).values())[0].keys()) 
         # (['review_count', 'useful', 'funny', 'cool', 'friends', 'fans', 'average_stars', 'reviews'])
 
-    def load_user(self):
-        if not os.path.exists('user-random.json'):
-            self.user_random()
-
-        if not os.path.exists('user-review-join.json'):
-            self.user_review_join()
-
-        if not os.path.exists('load-user.json'):
-            self.vectorized_user()
-
-        with open("load-user.json") as rf:
-            for each_line in rf:
-                data = json.loads(each_line)
-                self.user_data.update(data)
-
-        self.user_count = len(self.user_data)
-
-
-    def vectorized_business(self):
+    def __vectorized_business__(self):
         s = {}
         cnt = 0
         wf = open("_.json", "w+")
@@ -161,7 +152,7 @@ class DataLoader():
         wf.close()
 
         wf = open("load-business.json", "w+")
-        #print(json.loads(linecache.getline("vectorized-business.json", 500))['categories'])
+        # print(json.loads(linecache.getline("vectorized-business.json", 500))['categories'])
         with open("_.json") as rf:
             for each_line in rf:
                 data = json.loads(each_line)
@@ -172,7 +163,7 @@ class DataLoader():
                         data['vector'][(i[1:] if i[0] == " " else i)] = s[(i[1:] if i[0] == " " else i)]
                 del data['categories']
 
-                d = {}
+                d = dict()
                 d[data['business_id']] = data
                 del d[data['business_id']]['business_id']
 
@@ -180,10 +171,26 @@ class DataLoader():
             rf.close()
         wf.close()
 
+    def load_user(self):
+        if not os.path.exists('user-random.json'):
+            self.__user_random__()
+
+        if not os.path.exists('user-review-join.json'):
+            self.__user_review_join__()
+
+        if not os.path.exists('load-user.json'):
+            self.__vectorized_user__()
+
+        with open("load-user.json") as rf:
+            for each_line in rf:
+                data = json.loads(each_line)
+                self.user_data.update(data)
+
+        self.user_count = len(self.user_data)
 
     def load_business(self):
         if not os.path.exists('load-business.json'):
-            self.vectorized_business()
+            self.__vectorized_business__()
 
         with open("load-business.json") as rf:
             for each_line in rf:
@@ -192,12 +199,6 @@ class DataLoader():
 
         self.business_count = len(self.business_data)
 
-
-dl = DataLoader()
-dl.load_user()
-dl.load_business()
-print(dl.user_count)
-print(dl.business_count)
 
 
 
