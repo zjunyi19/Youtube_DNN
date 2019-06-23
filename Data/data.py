@@ -36,13 +36,40 @@ Data format:
 
 import json
 import linecache
+import datetime
+from functools import cmp_to_key
 import random
 import sys
 import os
 import datetime
 from functools import cmp_to_key
 
-PATH = "/Users/liuruidong/desktop/yelp_dataset/Youtube_DNN/Data/"
+PATH = "/Users/syiming/Project_Large/Youtube_DNN/Data/"
+
+
+def extract_embedding_catagory(business):
+    extracted_data = dict()
+    cid_set = set()
+    for key, value in business.items():
+        cid = []
+        for _, c_value in value['vector'].items():
+            cid.append(c_value)
+            cid_set.add(c_value)
+        extracted_data[key] = cid
+    return extracted_data, len(cid_set)
+
+
+def extract_embedding_user_business(user):
+    extracted_data = dict()
+    bid_set = set()
+    for key, value in user.items():
+        bid = []
+        for r in value['reviews']:
+            bid.append(r['business_id'])
+            bid_set.add(r['business_id'])
+        extracted_data[key] = bid
+    return extracted_data, len(bid_set)
+
 
 def load_grouped_data():
     """
@@ -62,17 +89,18 @@ class DataLoader:
     def __init__(self):
         self.user_count = 0
         self.user_data = {}
+        self.review_count = 0
 
         self.business_count = 0
         self.business_data = {}
 
-    def __user_random__(self):
+    def __user_random(self):
         data = []
 
         with open(PATH + 'user.json', 'r') as rf:
             print("\tRandom select user")
             for each_line in rf:
-                if random.randint(1, 10001) == 11:
+                if random.randint(1, 101) == 11:
                     data.append(json.loads(each_line))
 
         print("\tWrite random file")
@@ -80,7 +108,7 @@ class DataLoader:
             for i in data:
                 wf.write(json.dumps(i) + '\n')
 
-    def __user_review_join__(self):
+    def __user_review_join(self):
     
         print("\tEnter join")
 
@@ -99,15 +127,16 @@ class DataLoader:
                     join[data['user_id']]['reviews'].append(data)
             
         for key in join.keys():
-            join[key]['reviews'].sort(key=cmp_to_key(lambda x, y: (datetime.datetime.strptime(x["date"], '%Y-%m-%d %H:%M:%S') - datetime.datetime.strptime(y["date"], '%Y-%m-%d %H:%M:%S')).total_seconds()))
+            join[key]['reviews'].sort(key=cmp_to_key(
+                lambda x, y: (datetime.datetime.strptime(x["date"], '%Y-%m-%d %H:%M:%S')
+                              - datetime.datetime.strptime(y["date"], '%Y-%m-%d %H:%M:%S')).total_seconds()))
 
-        
         print("\tWrite join file")
         with open(PATH + 'user-review-join.json', 'w') as wf:
             for i in join.values():
                 wf.write(json.dumps(i) + '\n')
 
-    def __vectorized_user__(self):
+    def __vectorized_user(self):
         wf = open(PATH + "load-user.json", "w+")
         with open(PATH + "user-review-join.json") as rf:
             for each_line in rf:
@@ -138,7 +167,7 @@ class DataLoader:
         # print(list(json.loads(linecache.getline("load-user.json", 1)).values())[0].keys())
         # (['review_count', 'useful', 'funny', 'cool', 'friends', 'fans', 'average_stars', 'reviews'])
 
-    def __vectorized_business__(self):
+    def __vectorized_business(self):
         s = {}
         cnt = 0
         wf = open(PATH + "_.json", "w+")
@@ -211,5 +240,3 @@ class DataLoader:
                 self.business_data.update(data)
 
         self.business_count = len(self.business_data)
-
-
