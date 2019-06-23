@@ -39,8 +39,10 @@ import linecache
 import random
 import sys
 import os
+import datetime
+from functools import cmp_to_key
 
-PATH = "/Users/syiming/Project_Large/Youtube_DNN/Data/"
+PATH = "/Users/liuruidong/desktop/yelp_dataset/Youtube_DNN/Data/"
 
 def load_grouped_data():
     """
@@ -70,7 +72,7 @@ class DataLoader:
         with open(PATH + 'user.json', 'r') as rf:
             print("\tRandom select user")
             for each_line in rf:
-                if random.randint(1, 101) == 11:
+                if random.randint(1, 10001) == 11:
                     data.append(json.loads(each_line))
 
         print("\tWrite random file")
@@ -79,7 +81,7 @@ class DataLoader:
                 wf.write(json.dumps(i) + '\n')
 
     def __user_review_join__(self):
-
+    
         print("\tEnter join")
 
         join = {}
@@ -95,7 +97,11 @@ class DataLoader:
                 data = json.loads(each_line)
                 if data['user_id'] in join:
                     join[data['user_id']]['reviews'].append(data)
+            
+        for key in join.keys():
+            join[key]['reviews'].sort(key=cmp_to_key(lambda x, y: (datetime.datetime.strptime(x["date"], '%Y-%m-%d %H:%M:%S') - datetime.datetime.strptime(y["date"], '%Y-%m-%d %H:%M:%S')).total_seconds()))
 
+        
         print("\tWrite join file")
         with open(PATH + 'user-review-join.json', 'w') as wf:
             for i in join.values():
@@ -205,3 +211,5 @@ class DataLoader:
                 self.business_data.update(data)
 
         self.business_count = len(self.business_data)
+
+
