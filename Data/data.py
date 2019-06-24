@@ -61,14 +61,30 @@ def extract_embedding_catagory(business):
 
 def extract_embedding_user_business(user):
     extracted_data = dict()
-    bid_set = set()
+    dictionary = dict()
+    bid_dict = dict()
+    for key, value in user.items():
+        for r in value['reviews']:
+            if r['business_id'] in bid_dict:
+                bid_dict[r['business_id']] += 1
+            else:
+                bid_dict[r['business_id']] = 1
+
+    count = 0
+    for i in sorted(bid_dict, key=bid_dict.get):
+        dictionary[i] = count
+        count += 1
+
+    reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
+
     for key, value in user.items():
         bid = []
         for r in value['reviews']:
-            bid.append(r['business_id'])
-            bid_set.add(r['business_id'])
+            assert r['business_id'] in bid_dict
+            bid.append(dictionary[r['business_id']])
         extracted_data[key] = bid
-    return extracted_data, len(bid_set)
+
+    return extracted_data, dictionary, reverse_dictionary, count
 
 
 def load_grouped_data():
@@ -215,13 +231,13 @@ class DataLoader:
 
     def load_user(self):
         if not os.path.exists(PATH + 'user-random.json'):
-            self.__user_random__()
+            self.__user_random()
 
         if not os.path.exists(PATH + 'user-review-join.json'):
-            self.__user_review_join__()
+            self.__user_review_join()
 
         if not os.path.exists(PATH + 'load-user.json'):
-            self.__vectorized_user__()
+            self.__vectorized_user()
 
         with open(PATH + "load-user.json") as rf:
             for each_line in rf:
@@ -232,7 +248,7 @@ class DataLoader:
 
     def load_business(self):
         if not os.path.exists(PATH + 'load-business.json'):
-            self.__vectorized_business__()
+            self.__vectorized_business()
 
         with open(PATH + "load-business.json") as rf:
             for each_line in rf:
