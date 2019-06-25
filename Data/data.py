@@ -220,6 +220,7 @@ class DataLoader:
                     for i in categories.split(","):
                         data['vector'][(i[1:] if i[0] == " " else i)] = s[(i[1:] if i[0] == " " else i)]
                 del data['categories']
+                data['vector'] = sorted(data['vector'].items(),key= lambda x : x[1])
 
                 d = dict()
                 d[data['business_id']] = data
