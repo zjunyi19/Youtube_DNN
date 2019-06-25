@@ -11,6 +11,7 @@ Main function that combine different section.
 
 from Data.data import *
 from Model.embedding import *
+from Model.model import *
 
 
 class config():
@@ -20,6 +21,10 @@ class config():
     num_skips = 2  # How many times to reuse an input to generate a context.
     num_sampled = 64
     num_steps = 100001
+    DNN_learning_rate = 1.0
+    DNN_drop_rate = 0.95
+    DNN_layer1_size = 1024
+    DNN_layer2_size = 512
 
 
 def main():
@@ -38,6 +43,18 @@ def main():
     user_bus_embed = Embedding(user_bus_data, user_bus_count)
 
     bus_cat_embed = Embedding(business_cat_data, business_cat_count)
+
+    #TODO:get input & label, business number for DNN
+    business_size = 0
+    inputs = ()
+    labels = ()
+
+    #training
+    rev_embed_size = config.embedding_size #TODO:GET EMDEDDINGSIZES FOR CAT & BUSINESS
+    cat_embed_size = config.embedding_size
+
+    model = DNNmodel(rev_embed_size, cat_embed_size, business_size)
+    model.train(inputs, labels)
 
 
 
